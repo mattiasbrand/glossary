@@ -1,0 +1,39 @@
+info it worked if it ends with ok
+verbose cli [ '/home/cloud9/c9/support/node-c9-builds-v4/node-c9-sunos',
+verbose cli   '/home/ide_mattiasbrand/workspaces/npm/bin/npm.js',
+verbose cli   'install',
+verbose cli   'Base64' ]
+info using npm@1.0.1rc6
+info using node@v0.4.5
+verbose config file /home/cloud9/.npmrc
+verbose config file /home/cloud9/c9/support/etc/npmrc
+info into /mnt/ws/users/mattiasbrand/53607 [ 'Base64' ]
+verbose cache add [ 'Base64', null ]
+info addNamed [ 'Base64', '' ]
+verbose addNamed [ null, '' ]
+verbose GET Base64
+verbose raw, before any munging Base64
+verbose url resolving [ 'http://registry.npmjs.org/', './Base64' ]
+verbose url resolved http://registry.npmjs.org/Base64
+verbose url parsed { protocol: 'http:',
+verbose url parsed   slashes: true,
+verbose url parsed   host: 'registry.npmjs.org',
+verbose url parsed   hostname: 'registry.npmjs.org',
+verbose url parsed   pathname: '/Base64',
+verbose url parsed   href: 'http://registry.npmjs.org/Base64' }
+verbose response http://registry.npmjs.org/Base64
+silly chunk {"error":"not_found","reason":"document not found"}
+silly chunk 
+silly get cb [ 404,
+silly get cb   { server: 'CouchDB/1.1.0 (Erlang OTP/R14B03)',
+silly get cb     date: 'Tue, 28 Jun 2011 21:13:33 GMT',
+silly get cb     'content-type': 'application/json',
+silly get cb     'content-length': '52',
+silly get cb     'cache-control': 'must-revalidate' } ]
+ERR! 404 'Base64' is not in the npm registry.
+ERR! 404 You should bug the author to publish it.
+ERR! 404 Note that you can also install from a tarball or folder.
+ERR! 
+ERR! System SunOS 5.11
+ERR! command "/home/cloud9/c9/support/node-c9-builds-v4/node-c9-sunos" "/home/ide_mattiasbrand/workspaces/npm/bin/npm.js" "install" "Base64"
+verbose exit [ 1, true ]
