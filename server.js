@@ -1,8 +1,12 @@
+require.paths.unshift(__dirname + '/lib');
+require.paths.unshift(__dirname);
+
 var express = require('express');
 var urlpaser = require('url');
 var jade = require('jade');
 var https = require('https');
-var cradle = require('cradle');
+var glossaryService = require('glossaryService');
+console.log(glossaryService);
 
 var requiresLogin = function(req, res, next) {
         url = req.urlp = urlpaser.parse(req.url, true);
@@ -21,13 +25,6 @@ var requiresLogin = function(req, res, next) {
         }
     };
 
-// Init connection
-var connection = new(cradle.Connection)('https://brand.cloudant.com', 443, {
-    auth: { username: 'brand', password: 'underbar' }
-});
-
-// Init database
-var db = connection.database('glossary');
 
 // Init express
 app = express.createServer();
@@ -51,7 +48,10 @@ app.configure(function() {
 
 
 app.get('/', function(req, res) {
-    res.send("fooish");
+    res.render('answer', {
+	title: 'Practice your language skills!',
+        wordToTranslate: 'Snygg'
+    });
 });
 
 app.get('/login', function(req, res) {
@@ -61,20 +61,14 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-    db.get(req.body.username, function(err, user) {
-	console.log(req.body);
-	if(err) console.log(err);
-	console.log(user.password);
-	if(user.password == req.body.password) {
-		req.session.user = req.body.username;
-		req.session.auth = true;
+	if(glossaryService.isAuthorized(req)) {
+		res.redirect('/');
 	}
-    });
     
-    res.end();
+	res.end();
 });
 
-var port = 8080; // process.env.C9_PORT,
+var port = 8081; // process.env.C9_PORT,
 var url = 'localhost'; //  '0.0.0.0'
 app.listen(port,url);
 console.log('Express server started on port %s', app.address().port);
