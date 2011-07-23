@@ -1,15 +1,28 @@
 var assert = require('assert');
-var glossaryService = require('../glossaryService.js');
+var glossaryService = require('../lib/glossaryService.js');
 
 module.exports = {
-    'Can insert new word': function(){
-	console.log(glossaryService);
-	glossaryService.createWord('words/snygg', [ 'fine', 'handsome' ], function(err, resp) {
+'Can insert new word': function(){
+	glossaryService.createWord('snygg', [ 'fine', 'handsome' ], function(err, resp) {
 		assert.isNull(err);
-		console.log(resp);
-		glossaryService.deleteWord('words/snygg', function(err, resp) {
+		glossaryService.deleteWord('snygg', function(err, resp) {
 			assert.isNull(err);
 		});
 	});	
-    }
+},
+
+'Can get word': function() {
+	glossaryService.createWord('ful', [ 'ugly' ], function(err, resp) {
+		assert.isNull(err);
+		glossaryService.getWord('ful', function(err, doc) {
+			console.log(doc);
+			assert.isNull(err);
+			assert.isNotNull(doc);
+			assert.equal(doc.word, 'ful');
+		});
+		glossaryService.deleteWord('ful', function(err, resp) {
+			assert.isNull(err);
+		});
+	});	
+}
 };

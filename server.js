@@ -2,6 +2,7 @@ require.paths.unshift(__dirname + '/lib');
 require.paths.unshift(__dirname);
 
 var express = require('express');
+var express_params = require('express-params');
 var urlpaser = require('url');
 var jade = require('jade');
 var https = require('https');
@@ -15,13 +16,13 @@ var requiresLogin = function(req, res, next) {
             return;
         }
 
-	console.log(req.session);
         if (req.session && req.session.user) {
             next();
         }
         else {
-            res.writeHead(403);
-            res.end('You are not authorized');
+			res.redirect('/login');
+			return;
+            //res.end('You are not authorized');
         }
     };
 
@@ -46,12 +47,46 @@ app.configure(function() {
     }));
 });
 
+// Apply params extension to express
+express_params.extend(app);
+ 
+app.param(':word', function(req, res, next, param) {
+	glossaryService.getWord(param, function(err, word) {
+		if(err) {
+			if(err.error !== 'not_found') return next(err);
+		}
+		req.word = word;
+		console.log("Found: " + word);
+		next();
+	});
+});
 
 app.get('/', function(req, res) {
+    res.redirect('/answer');
+});
+
+app.get('/answer/:word', function(req, res) {
+	console.log("Got: " + req.word);
+	if(req.word === undefined) {
+		res.redirect('/create/' + req.params.word);
+		return;
+	}
     res.render('answer', {
 	title: 'Practice your language skills!',
-        wordToTranslate: 'Snygg'
+        wordToTranslate: word.word
     });
+	res.end();
+});
+
+app.get('/create/:newWord', function(req, res) {
+	res.end('Create new word');
+});
+
+
+app.post('/answer/:word', function(req, res) {
+    if(req.word === undefined) res.end(req.params.word + ' does not exist');
+	if(req.word.translations.contains(req.body.answer)) res.end('Correct!');
+	res.end('Wrong!');
 });
 
 app.get('/login', function(req, res) {
@@ -61,11 +96,10 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-	if(glossaryService.isAuthorized(req)) {
-		res.redirect('/');
-	}
-    
-	res.end();
+	glossaryService.authorize(req, function (result) {
+		if(result === true)	res.redirect('back');
+		else res.end('Failed login');
+	});
 });
 
 var port = 8081; // process.env.C9_PORT,
