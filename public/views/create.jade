@@ -1,0 +1,6 @@
+form(action='/create/#{wordToAdd}', method='post')
+    label Word to translate: #{wordToAdd}
+    br
+    label All valid answers (comma-separated)
+        input(type='text', name='answers')
+    input(type='submit', value='Submit')

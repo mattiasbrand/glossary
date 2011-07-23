@@ -72,20 +72,49 @@ app.get('/answer/:word', function(req, res) {
 		return;
 	}
     res.render('answer', {
-	title: 'Practice your language skills!',
-        wordToTranslate: word.word
+		title: 'Practice your language skills!',
+        wordToTranslate: req.word.word
     });
-	res.end();
 });
 
-app.get('/create/:newWord', function(req, res) {
-	res.end('Create new word');
+app.get('/create/:word', function(req, res) {
+	if(req.word !== undefined) {
+		res.end(req.params.word + ' already exists!');
+		return;
+	}
+	res.render('create', {
+		title: 'Add new word to glossary',
+		wordToAdd: req.params.word
+	});
 });
 
+app.post('/create/:word', function(req, res) {
+	if(req.word) {
+		res.end(req.params.word + ' already exists!');
+		return;
+	}
+
+	var translations = req.body.answers.replace(/\s/g, '');
+	console.log(translations);
+	glossaryService.createWord(req.params.word, translations.split(','), function(err, resp) {
+		if(err) {
+			res.end(err);
+			return;
+		}
+		res.redirect('home');
+	});
+});
 
 app.post('/answer/:word', function(req, res) {
-    if(req.word === undefined) res.end(req.params.word + ' does not exist');
-	if(req.word.translations.contains(req.body.answer)) res.end('Correct!');
+    if(req.word === undefined) {
+		res.end(req.params.word + ' does not exist');
+		return;
+	}
+	if(req.word.translations.indexOf(req.body.answer) != -1) {
+		res.end('Correct!');
+		return;
+	}
+
 	res.end('Wrong!');
 });
 
@@ -97,7 +126,7 @@ app.get('/login', function(req, res) {
 
 app.post('/login', function(req, res) {
 	glossaryService.authorize(req, function (result) {
-		if(result === true)	res.redirect('back');
+		if(result === true)	res.redirect('home');
 		else res.end('Failed login');
 	});
 });
