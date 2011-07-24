@@ -65,6 +65,13 @@ app.get('/', function(req, res) {
     res.redirect('/answer');
 });
 
+app.get('/answer', function(req, res) {
+	glossaryService.getNextWord(function(word) {
+		console.log(word);
+		res.redirect('answer/' + word.word);
+	});
+});
+
 app.get('/answer/:word', function(req, res) {
 	console.log("Got: " + req.word);
 	if(req.word === undefined) {
