@@ -17,18 +17,31 @@ module.exports = {
 		glossaryService.getWord('ful', function(err, doc) {
 			assert.isNull(err);
 			assert.isNotNull(doc);
-			assert.equal(doc.word, 'ful');
-		});
-		glossaryService.deleteWord('ful', function(err, resp) {
-			assert.isNull(err);
+			assert.equal(doc.word, 'ful');		
+
+			glossaryService.deleteWord('ful', function(err, resp) {
+				assert.isNull(err);
+			});
 		});
 	});	
 },
 
 'Can query next word' : function() {
 	glossaryService.getNextWord(function(word) {
-		console.log(word);
 		assert.isNotNull(word);
 	});
+},
+
+'Can update answer' : function() {
+	glossaryService.createWord('apa', [ 'ape', 'monkey' ], function(err, resp) {
+		assert.isNull(err);
+		glossaryService.saveAnswer('apa', 2, 1, '2011-06-20', function(err, resp) {
+			assert.isNull(err);
+
+			glossaryService.deleteWord('apa', function(err, resp) {
+				assert.isNull(err);
+			});
+		});
+	});	
 }
 };

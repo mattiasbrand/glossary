@@ -56,7 +56,6 @@ app.param(':word', function(req, res, next, param) {
 			if(err.error !== 'not_found') return next(err);
 		}
 		req.word = word;
-		console.log("Found: " + word);
 		next();
 	});
 });
@@ -67,21 +66,52 @@ app.get('/', function(req, res) {
 
 app.get('/answer', function(req, res) {
 	glossaryService.getNextWord(function(word) {
-		console.log(word);
 		res.redirect('answer/' + word.word);
 	});
 });
 
 app.get('/answer/:word', function(req, res) {
-	console.log("Got: " + req.word);
 	if(req.word === undefined) {
 		res.redirect('/create/' + req.params.word);
 		return;
 	}
+
+	var message = undefined;
+	if(req.session.lastWord) {
+		if(req.session.lastAnswerCorrect === true) message = 'Correct!!';
+		else message = 'Wrong... ' + req.session.lastWord.word + ' can be translated to: ' + req.session.lastWord.translations;
+	}
+
     res.render('answer', {
 		title: 'Practice your language skills!',
-        wordToTranslate: req.word.word
+        wordToTranslate: req.word.word,
+		lastAnswerCorrect: req.session.lastAnswerCorrect,
+		message: message
     });
+});
+
+app.post('/answer/:word', function(req, res) {
+	var word = req.word;
+
+    if(word === undefined) {
+		res.end(req.params.word + ' does not exist');
+		return;
+	}
+
+	var now = new Date().toJSON();
+	if(word.translations.indexOf(req.body.answer) != -1) {
+		req.session.lastAnswerCorrect = true;
+		glossaryService.saveAnswer(word.word, word.correctAnswers || 0 + 1, word.wrongAnswers, now, function(err, resp) {
+		});
+	}
+	else {	
+		req.session.lastAnswerCorrect = false;
+		glossaryService.saveAnswer(word.word, word.correctAnswers, word.wrongAnswers || 0 + 1, now, function(err, resp) {
+		});
+	}
+
+	req.session.lastWord = word;
+	res.redirect('/answer');
 });
 
 app.get('/create/:word', function(req, res) {
@@ -112,18 +142,6 @@ app.post('/create/:word', function(req, res) {
 	});
 });
 
-app.post('/answer/:word', function(req, res) {
-    if(req.word === undefined) {
-		res.end(req.params.word + ' does not exist');
-		return;
-	}
-	if(req.word.translations.indexOf(req.body.answer) != -1) {
-		res.end('Correct!');
-		return;
-	}
-
-	res.end('Wrong!');
-});
 
 app.get('/login', function(req, res) {
     res.render('login', {
