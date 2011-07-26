@@ -1,3 +1,6 @@
+# Setup of environment variables
+settings.sh
+
 # Node.js with Express and Stlyus
 public/css/*.css
 /.monitor
