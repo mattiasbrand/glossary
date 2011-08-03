@@ -2,10 +2,8 @@ require.paths.unshift(__dirname + '/lib');
 require.paths.unshift(__dirname);
 
 var express = require('express');
-var express_params = require('express-params');
 var urlpaser = require('url');
 var jade = require('jade');
-var https = require('https');
 var glossaryService = require('glossaryService');
 var stylus = require('stylus');
 
@@ -53,9 +51,6 @@ app.configure(function() {
 	}));
 });
 
-// Apply params extension to express
-express_params.extend(app);
- 
 app.param(':word', function(req, res, next, param) {
 	glossaryService.getWord(param, function(err, word) {
 		if(err) {
