@@ -7,7 +7,7 @@ var urlpaser = require('url');
 var jade = require('jade');
 var https = require('https');
 var glossaryService = require('glossaryService');
-console.log(glossaryService);
+var stylus = require('stylus');
 
 var requiresLogin = function(req, res, next) {
         url = req.urlp = urlpaser.parse(req.url, true);
@@ -45,6 +45,12 @@ app.configure(function() {
         src: __dirname + '/public',
         enable: ['less']
     }));
+	app.use(stylus.middleware({
+		src: __dirname + '/stylus',
+		dest: __dirname + '/public',
+		compress: true,
+		debug: true
+	}));
 });
 
 // Apply params extension to express
@@ -156,7 +162,7 @@ app.post('/login', function(req, res) {
 	});
 });
 
-var port = 8081; // process.env.C9_PORT,
+var port = process.env.C9_PORT;
 var url = 'localhost'; //  '0.0.0.0'
 app.listen(port,url);
 console.log('Express server started on port %s', app.address().port);
