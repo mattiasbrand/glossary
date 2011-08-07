@@ -172,6 +172,7 @@ app.post('/login', function(req, res) {
 
 var port = process.env.C9_PORT;
 app.listen(port);
+console.log(settings);
 //console.log('Express server started on port %s', app.address().port);
 
 //'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
