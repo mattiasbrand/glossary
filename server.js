@@ -1,14 +1,16 @@
 require.paths.unshift(__dirname + '/lib');
 require.paths.unshift(__dirname);
 
+var settings = require('./settings');
 var express = require('express');
-var urlpaser = require('url');
+var urlparser = require('url');
 var jade = require('jade');
 var glossaryService = require('glossaryService');
 var stylus = require('stylus');
+var couchSessionStore = require('connect-couchdb')(express);
 
 var requiresLogin = function(req, res, next) {
-        url = req.urlp = urlpaser.parse(req.url, true);
+        url = req.urlp = urlparser.parse(req.url, true);
         if (url.pathname == "/login") {
             next();
             return;
@@ -24,6 +26,14 @@ var requiresLogin = function(req, res, next) {
         }
     };
 
+var sessionStore = new couchSessionStore( {
+	name: 'session-store', 
+	host: 'brand.cloudant.com', 
+	port: settings.couchdb.port,
+	username: settings.couchdb.user,
+	password: settings.couchdb.password,
+	ssl: true
+});
 
 // Init express
 app = express.createServer();
@@ -36,8 +46,8 @@ app.configure(function() {
     app.use(express.bodyParser());
     app.use(express.cookieParser());
     app.use(express.session({
-        secret: 'wth is this for?'
-    }));
+        secret: 'wth is this for?',
+		store: sessionStore }));
     app.use(requiresLogin);
     app.use(express.compiler({
         src: __dirname + '/public',
@@ -133,7 +143,6 @@ app.post('/create/:word', function(req, res) {
 	}
 
 	var translations = req.body.answers.replace(/\s/g, '');
-	console.log(translations);
 	glossaryService.createWord(req.params.word, translations.split(','), function(err, resp) {
 		if(err) {
 			res.end(err);
@@ -152,8 +161,14 @@ app.get('/login', function(req, res) {
 
 app.post('/login', function(req, res) {
 	glossaryService.authorize(req, function (result) {
-		if(result === true)	res.redirect('home');
-		else res.end('Failed login');
+		if(result === true)	{
+//			res.end();
+			res.redirect('home');
+		}
+		else {
+			console.log(req.session);
+			res.end('Failed login');
+		}
 	});
 });
 
