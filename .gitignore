@@ -30,3 +30,6 @@ Icon?
 
 # nodejs npm modules
 /node_modules
+
+# nodester config
+.nodester.appconfig

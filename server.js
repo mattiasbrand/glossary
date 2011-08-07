@@ -162,11 +162,9 @@ app.get('/login', function(req, res) {
 app.post('/login', function(req, res) {
 	glossaryService.authorize(req, function (result) {
 		if(result === true)	{
-//			res.end();
 			res.redirect('home');
 		}
 		else {
-			console.log(req.session);
 			res.end('Failed login');
 		}
 	});
@@ -175,7 +173,7 @@ app.post('/login', function(req, res) {
 var port = process.env.C9_PORT;
 var url = 'localhost'; //  '0.0.0.0'
 app.listen(port,url);
-console.log('Express server started on port %s', app.address().port);
+//console.log('Express server started on port %s', app.address().port);
 
 //'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 //    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
